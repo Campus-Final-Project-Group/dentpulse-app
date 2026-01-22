@@ -1,11 +1,3 @@
-// import React from "react";
-// import Onboarding1 from "./Src/Components/Screens/Onboarding1";
-
-// export default function App() {
-//   return <Onboarding1 />;
-// }
-
-
 import React, { useState } from "react";
 import Onboarding1 from "./Src/Components/Screens/Onboarding1";
 import SelectRole from "./Src/Components/Screens/SelectRole";
