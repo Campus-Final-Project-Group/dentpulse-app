@@ -1,45 +1,36 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+// import React from "react";
+// import Onboarding1 from "./Src/Components/Screens/Onboarding1";
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+// export default function App() {
+//   return <Onboarding1 />;
+// }
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
 
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
+import React, { useState } from "react";
+import Onboarding1 from "./Src/Components/Screens/Onboarding1";
+import SelectRole from "./Src/Components/Screens/SelectRole";
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+export default function App() {
+  const [screen, setScreen] = useState("onboarding");
+  const [role, setRole] = useState(null);
 
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
+  if (screen === "onboarding") {
+    return <Onboarding1 onFinish={() => setScreen("role")} />;
+  }
+
+  if (screen === "role") {
+    return (
+      <SelectRole
+        selectedRole={role}
+        onSelectRole={setRole}
+        onContinue={() => {
+          if (!role) return;
+          console.log("Selected Role:", role);
+          // setScreen("login");
+        }}
       />
-    </View>
-  );
+    );
+  }
+
+  return null;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
