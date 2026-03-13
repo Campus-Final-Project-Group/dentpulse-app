@@ -5,8 +5,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BackgroundWrapper from "../Com_components/BackgroundWrapper";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const Dashboard = () => {
+    const navigation = useNavigation();
     const [patientName, setPatientName] = useState("");
 
     useEffect(() => {
@@ -114,7 +116,7 @@ const Dashboard = () => {
                         <TouchableOpacity
                             style={styles.cardButton}
                             activeOpacity={0.8}
-                            onPress={() => { }}
+                            onPress={() => navigation.navigate("MyIdCard")}
                         >
                             <View style={styles.cardInner}>
                                 <Icon source="card-account-details-outline" size={52} color="#33D063" />

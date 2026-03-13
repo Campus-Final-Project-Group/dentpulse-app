@@ -8,6 +8,7 @@ import Login from "./Src/Components/Screens/Login";
 import SignUp from "./Src/Components/Screens/SignUp"
 import OtpVerification from "./Src/Components/Screens/OtpVerification";
 import PatientTabs from "./Src/Components/Screens/PatientTabs";
+import MyIdCard from "./Src/Components/Screens/MyIdCard"
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ export default function App() {
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="OtpVerification" component={OtpVerification} />
           <Stack.Screen name="PatientTabs" component={PatientTabs} />
+          <Stack.Screen name="MyIdCard" component={MyIdCard} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
