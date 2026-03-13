@@ -1,31 +1,19 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import BackgroundWrapper from "../Com_components/BackgroundWrapper";
 
-export default function Onboarding1({ onFinish }) {
-  // ✅ Auto move to next screen
+export default function Onboarding1({ navigation }) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      onFinish();
-    }, 2000); // 2 seconds
+      navigation.replace("Login");
+    }, 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigation]);
 
   return (
-    <ImageBackground
-      source={require("../Assets/onboard-bg.png")}
-      style={styles.bg}
-      resizeMode="cover"
-    >
-      <View style={styles.overlay} />
-
+    <BackgroundWrapper>
       <SafeAreaView style={styles.safe}>
         <View style={styles.content}>
           <View style={styles.logoWrap}>
@@ -40,39 +28,45 @@ export default function Onboarding1({ onFinish }) {
           <Text style={styles.subtitle}>Your Smile, Our Priority</Text>
         </View>
       </SafeAreaView>
-    </ImageBackground>
+    </BackgroundWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  bg: { flex: 1 },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(210, 235, 220, 0.65)",
+  safe: {
+    flex: 1,
   },
-  safe: { flex: 1 },
+
   content: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 24,
   },
+
   logoWrap: {
     width: 110,
     height: 110,
     borderRadius: 55,
-    backgroundColor: "rgba(120, 190, 140, 0.20)",
+    backgroundColor: "rgba(51, 208, 99, 0.10)",
     borderWidth: 2,
-    borderColor: "rgba(40, 120, 70, 0.35)",
+    borderColor: "rgba(47, 107, 77, 0.18)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 18,
   },
-  logo: { width: 70, height: 70 },
+
+  logo: {
+    width: 70,
+    height: 70,
+  },
+
   title: {
     fontSize: 42,
     fontWeight: "800",
-    color: "#1F5A3B",
+    color: "#1C8F3E",
   },
+
   subtitle: {
     fontSize: 18,
     fontWeight: "600",
