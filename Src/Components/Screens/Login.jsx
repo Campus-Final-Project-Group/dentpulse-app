@@ -36,20 +36,26 @@ const Login = () => {
       );
 
       console.log("Login response:", response.data);
-      Alert.alert("Login Successful");
-      
+      await AsyncStorage.setItem("token", response.data.token);
+      await AsyncStorage.setItem("fullName", response.data.user.fullName);
 
-      // fields clear karanna one nam
+      console.log("Token:", response.data.token);
+
+      Alert.alert(
+        "Login Successful",
+        "You have logged in successfully",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.replace("PatientTabs"),
+          },
+        ]
+      );
+
       setEmail("");
       setPassword("");
-      AsyncStorage.setItem("token", response.data.token);
 
-      // token ekak awoth mehema ganna puluwan
-      // const token = response.data.token;
-       console.log("Token:", response.data.token);
 
-      // next screen ekata yanna
-      // navigation.navigate("Dashboard");
     } catch (error) {
       console.log("Login error:", error);
 
@@ -205,7 +211,7 @@ const styles = StyleSheet.create({
 
   input: {
     backgroundColor: "#ffffff",
-    
+
   },
 
   inputOutline: {
