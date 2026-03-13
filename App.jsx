@@ -6,6 +6,7 @@ import { PaperProvider } from "react-native-paper";
 import Onboarding1 from "./Src/Components/Screens/Onboarding1";
 import Login from "./Src/Components/Screens/Login";
 import SignUp from "./Src/Components/Screens/SignUp"
+import OtpVerification from "./Src/Components/Screens/OtpVerification";
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
           <Stack.Screen name="Onboarding" component={Onboarding1} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="OtpVerification" component={OtpVerification} />
 
         </Stack.Navigator>
       </NavigationContainer>
