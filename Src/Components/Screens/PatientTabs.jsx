@@ -1,6 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-paper";
+import Profile from "./Profile";
 
 import Dashboard from "./Dashboard";
 
@@ -8,7 +9,7 @@ const Tab = createBottomTabNavigator();
 
 const BookScreen = () => null;
 const AppointmentsScreen = () => null;
-const ProfileScreen = () => null;
+
 
 const PatientTabs = () => {
   return (
@@ -59,7 +60,7 @@ const PatientTabs = () => {
 
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon source="account" color={color} size={size} />
