@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Calendar } from "react-native-calendars";
+import { Picker } from "@react-native-picker/picker";
 import BackgroundWrapper from "../Com_components/BackgroundWrapper";
 
 const AddFamilyMember = () => {
@@ -31,6 +32,10 @@ const AddFamilyMember = () => {
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const today = new Date();
+  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
+
   const BASE_URL = "http://192.168.155.122:8080";
 
   const relationshipOptions = [
@@ -48,6 +53,26 @@ const AddFamilyMember = () => {
     "Guardian",
   ];
 
+  const months = [
+    { label: "January", value: 1 },
+    { label: "February", value: 2 },
+    { label: "March", value: 3 },
+    { label: "April", value: 4 },
+    { label: "May", value: 5 },
+    { label: "June", value: 6 },
+    { label: "July", value: 7 },
+    { label: "August", value: 8 },
+    { label: "September", value: 9 },
+    { label: "October", value: 10 },
+    { label: "November", value: 11 },
+    { label: "December", value: 12 },
+  ];
+
+  const years = [];
+  for (let year = today.getFullYear(); year >= 1950; year--) {
+    years.push(year);
+  }
+
   function formatDate(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -55,6 +80,18 @@ const AddFamilyMember = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${month}/${day}/${year}`;
+  }
+
+  function openCalendar() {
+    if (birthDate) {
+      const existingDate = new Date(birthDate);
+      setSelectedYear(existingDate.getFullYear());
+      setSelectedMonth(existingDate.getMonth() + 1);
+    } else {
+      setSelectedYear(today.getFullYear());
+      setSelectedMonth(today.getMonth() + 1);
+    }
+    setOpenDatePicker(true);
   }
 
   const addFamilyMember = async () => {
@@ -342,7 +379,7 @@ const AddFamilyMember = () => {
             <Text style={styles.label}>Date Of Birth</Text>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => setOpenDatePicker(true)}
+              onPress={openCalendar}
               style={styles.selectButton}
             >
               <Text
@@ -424,7 +461,47 @@ const AddFamilyMember = () => {
             onDismiss={() => setOpenDatePicker(false)}
             contentContainerStyle={styles.modalStyle}
           >
+            <View style={styles.pickerRow}>
+              <View style={styles.pickerWrap}>
+                <Picker
+                  selectedValue={selectedMonth}
+                  onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                  style={styles.picker}
+                  dropdownIconColor="#000000"
+                >
+                  {months.map((month) => (
+                    <Picker.Item
+                      key={month.value}
+                      label={month.label}
+                      value={month.value}
+                      color="#000000"
+                    />
+                  ))}
+                </Picker>
+              </View>
+
+              <View style={styles.pickerWrap}>
+                <Picker
+                  selectedValue={selectedYear}
+                  onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                  style={styles.picker}
+                  dropdownIconColor="#000000"
+                >
+                  {years.map((year) => (
+                    <Picker.Item
+                      key={year}
+                      label={year.toString()}
+                      value={year}
+                      color="#000000"
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
             <Calendar
+              key={`${selectedYear}-${selectedMonth}`}
+              current={`${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`}
               theme={{
                 selectedDayBackgroundColor: "#08B33E",
                 todayTextColor: "#08B33E",
@@ -432,7 +509,13 @@ const AddFamilyMember = () => {
               }}
               onDayPress={(day) => {
                 setBirthDate(day.dateString);
+                setSelectedYear(new Date(day.dateString).getFullYear());
+                setSelectedMonth(new Date(day.dateString).getMonth() + 1);
                 setOpenDatePicker(false);
+              }}
+              onMonthChange={(monthData) => {
+                setSelectedYear(monthData.year);
+                setSelectedMonth(monthData.month);
               }}
               maxDate={new Date().toISOString().split("T")[0]}
               markedDates={
@@ -647,6 +730,27 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: "#1F2D22",
+  },
+
+  pickerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+
+  pickerWrap: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#33D063",
+    borderRadius: 10,
+    marginHorizontal: 4,
+    overflow: "hidden",
+    backgroundColor: "#ffffff",
+  },
+
+  picker: {
+    height: 50,
+    color: "#000000",
   },
 });
 
