@@ -9,6 +9,10 @@ import SignUp from "./Src/Components/Screens/SignUp"
 import OtpVerification from "./Src/Components/Screens/OtpVerification";
 import PatientTabs from "./Src/Components/Screens/PatientTabs";
 import MyIdCard from "./Src/Components/Screens/MyIdCard"
+import FamilyMembers from "./Src/Components/Screens/FamilyMembers";
+import AddFamilyMember from "./Src/Components/Screens/AddFamilyMember";
+import UpdateFamilyMember from "./Src/Components/Screens/UpdateFamilyMember"
+import FamilyMemberIdCard from "./Src/Components/Screens/FamilyMemberIdCard";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +30,10 @@ export default function App() {
           <Stack.Screen name="OtpVerification" component={OtpVerification} />
           <Stack.Screen name="PatientTabs" component={PatientTabs} />
           <Stack.Screen name="MyIdCard" component={MyIdCard} />
+          <Stack.Screen name="FamilyMembers" component={FamilyMembers} />
+          <Stack.Screen name="AddFamilyMember" component={AddFamilyMember} />
+          <Stack.Screen name="UpdateFamilyMember" component={UpdateFamilyMember} />
+          <Stack.Screen name="FamilyMemberIdCard" component={FamilyMemberIdCard} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

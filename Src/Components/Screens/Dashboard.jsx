@@ -102,7 +102,7 @@ const Dashboard = () => {
                         <TouchableOpacity
                             style={styles.cardButton}
                             activeOpacity={0.8}
-                            onPress={() => { }}
+                            onPress={() => navigation.navigate("FamilyMembers")}
                         >
                             <View style={styles.cardInner}>
                                 <Icon source="account-group" size={52} color="#33D063" />
