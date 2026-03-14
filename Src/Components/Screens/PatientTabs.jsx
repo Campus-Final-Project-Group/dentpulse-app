@@ -6,6 +6,7 @@ import Profile from "./Profile";
 
 import Dashboard from "./Dashboard";
 import BookAppointment from "./BookAppointment"
+import Appointments from "./Appointments"
 
 const Tab = createBottomTabNavigator();
 
@@ -52,7 +53,7 @@ const PatientTabs = () => {
 
       <Tab.Screen
         name="Appointments"
-        component={AppointmentsScreen}
+        component={Appointments}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon source="clipboard-text-outline" color={color} size={size} />

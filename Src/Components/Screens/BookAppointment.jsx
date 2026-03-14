@@ -14,7 +14,7 @@ import axios from "axios";
 import { Calendar } from "react-native-calendars";
 import BackgroundWrapper from "../Com_components/BackgroundWrapper";
 
-const WEEKDAY_SLOTS = [
+const WEEKEND_SLOTS = [
   "10:30",
   "11:00",
   "11:30",
@@ -30,7 +30,7 @@ const WEEKDAY_SLOTS = [
   "16:30",
 ];
 
-const WEEKEND_SLOTS = [
+const WEEKDAY_SLOTS = [
   "16:00",
   "16:30",
   "17:00",
