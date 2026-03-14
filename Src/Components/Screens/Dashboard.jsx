@@ -83,7 +83,7 @@ const Dashboard = () => {
                     <TouchableOpacity
                         style={styles.bookButton}
                         activeOpacity={0.8}
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate("BookAppointment")}
                     >
                         <View style={styles.bookButtonInner}>
                             <Icon source="calendar-month-outline" size={24} color="#FFFFFF" />
