@@ -15,6 +15,9 @@ import UpdateFamilyMember from "./Src/Components/Screens/UpdateFamilyMember"
 import FamilyMemberIdCard from "./Src/Components/Screens/FamilyMemberIdCard";
 import BookAppointment from "./Src/Components/Screens/BookAppointment";
 import ReviewAppointment from "./Src/Components/Screens/ReviewAppointment"
+import ForgotPassword from "./Src/Components/Screens/ForgotPassword";
+import ForgotPasswordOtp from "./Src/Components/Screens/ForgotPasswordOtp";
+import ResetPassword from "./Src/Components/Screens/ResetPassword";
 
 
 const Stack = createStackNavigator();
@@ -39,8 +42,12 @@ export default function App() {
           <Stack.Screen name="FamilyMemberIdCard" component={FamilyMemberIdCard} />
           <Stack.Screen name="BookAppointment" component={BookAppointment} />
           <Stack.Screen name="ReviewAppointment" component={ReviewAppointment} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+          <Stack.Screen name="ForgotPasswordOtp" component={ForgotPasswordOtp} />
+          <Stack.Screen name="ResetPassword" component={ResetPassword} />
 
-          
+
+
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
