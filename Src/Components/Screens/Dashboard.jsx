@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
 import { Text, Icon } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackgroundWrapper from "../Com_components/BackgroundWrapper";
@@ -22,6 +22,29 @@ const Dashboard = () => {
 
         loadUserData();
     }, []);
+
+    const handleLogout = async () => {
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Logout",
+                    style: "destructive",
+                    onPress: async () => {
+                        await AsyncStorage.removeItem("token");
+                        await AsyncStorage.removeItem("fullName");
+                        navigation.replace("Login");
+                    },
+                },
+            ]
+        );
+    };
+
     return (
         <BackgroundWrapper>
             <SafeAreaView style={styles.safe}>
@@ -29,7 +52,17 @@ const Dashboard = () => {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
-
+                    <View style={styles.topBar}>
+                        <View />
+                        <TouchableOpacity
+                            style={styles.logoutButton}
+                            activeOpacity={0.8}
+                            onPress={handleLogout}
+                        >
+                            <Icon source="logout" size={18} color="#145A32" />
+                            <Text style={styles.logoutText}>Logout</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <View style={styles.topSection}>
                         <View style={styles.logoRow}>
@@ -144,7 +177,31 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
     },
 
+    topBar: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8,
+    },
 
+    logoutButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-end",
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1.2,
+        borderColor: "#145A32",
+        borderRadius: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+    },
+
+    logoutText: {
+        marginLeft: 6,
+        fontSize: 14,
+        color: "#145A32",
+        fontWeight: "600",
+    },
 
     topSection: {
         alignItems: "center",
