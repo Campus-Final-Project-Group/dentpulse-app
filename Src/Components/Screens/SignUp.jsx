@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
+import { Picker } from "@react-native-picker/picker";
 import BackgroundWrapper from "../Com_components/BackgroundWrapper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -22,12 +23,47 @@ const SignUp = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    const today = new Date();
+    const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
+
+    const months = [
+        { label: "January", value: 1 },
+        { label: "February", value: 2 },
+        { label: "March", value: 3 },
+        { label: "April", value: 4 },
+        { label: "May", value: 5 },
+        { label: "June", value: 6 },
+        { label: "July", value: 7 },
+        { label: "August", value: 8 },
+        { label: "September", value: 9 },
+        { label: "October", value: 10 },
+        { label: "November", value: 11 },
+        { label: "December", value: 12 },
+    ];
+
+    const years = [];
+    for (let year = today.getFullYear(); year >= 1950; year--) {
+        years.push(year);
+    }
+
     function formatDate(date) {
         if (!date) return "";
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
+    }
+
+    function openCalendar() {
+        if (dateOfBirth) {
+            setSelectedYear(dateOfBirth.getFullYear());
+            setSelectedMonth(dateOfBirth.getMonth() + 1);
+        } else {
+            setSelectedYear(today.getFullYear());
+            setSelectedMonth(today.getMonth() + 1);
+        }
+        setOpenDatePicker(true);
     }
 
     async function goSignUp() {
@@ -240,7 +276,7 @@ const SignUp = () => {
                         <Text style={styles.label}>Date of Birth</Text>
                         <TouchableOpacity
                             activeOpacity={0.8}
-                            onPress={() => setOpenDatePicker(true)}
+                            onPress={openCalendar}
                             style={styles.dateButton}
                         >
                             <Text
@@ -353,7 +389,47 @@ const SignUp = () => {
                         onDismiss={() => setOpenDatePicker(false)}
                         contentContainerStyle={styles.modalStyle}
                     >
+                        <View style={styles.pickerRow}>
+                            <View style={styles.pickerWrap}>
+                                <Picker
+                                    selectedValue={selectedMonth}
+                                    onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                                    style={styles.picker}
+                                    dropdownIconColor="#000000"
+                                >
+                                    {months.map((month) => (
+                                        <Picker.Item
+                                            key={month.value}
+                                            label={month.label}
+                                            value={month.value}
+                                            color="#000000"
+                                        />
+                                    ))}
+                                </Picker>
+                            </View>
+
+                            <View style={styles.pickerWrap}>
+                                <Picker
+                                    selectedValue={selectedYear}
+                                    onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                                    style={styles.picker}
+                                    dropdownIconColor="#000000"
+                                >
+                                    {years.map((year) => (
+                                        <Picker.Item
+                                            key={year}
+                                            label={year.toString()}
+                                            value={year}
+                                            color="#000000"
+                                        />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </View>
+
                         <Calendar
+                            key={`${selectedYear}-${selectedMonth}`}
+                            current={`${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`}
                             theme={{
                                 selectedDayBackgroundColor: "#08B33E",
                                 todayTextColor: "#08B33E",
@@ -363,17 +439,23 @@ const SignUp = () => {
                             onDayPress={(day) => {
                                 const selectedDate = new Date(day.dateString);
                                 setDateOfBirth(selectedDate);
+                                setSelectedYear(selectedDate.getFullYear());
+                                setSelectedMonth(selectedDate.getMonth() + 1);
                                 setOpenDatePicker(false);
+                            }}
+                            onMonthChange={(monthData) => {
+                                setSelectedYear(monthData.year);
+                                setSelectedMonth(monthData.month);
                             }}
                             maxDate={new Date().toISOString().split("T")[0]}
                             markedDates={
                                 dateOfBirth
                                     ? {
-                                        [dateOfBirth.toISOString().split("T")[0]]: {
-                                            selected: true,
-                                            selectedColor: "#08B33E",
-                                        },
-                                    }
+                                          [dateOfBirth.toISOString().split("T")[0]]: {
+                                              selected: true,
+                                              selectedColor: "#08B33E",
+                                          },
+                                      }
                                     : {}
                             }
                         />
@@ -559,6 +641,27 @@ const styles = StyleSheet.create({
         margin: 20,
         borderRadius: 15,
         elevation: 5,
+    },
+
+    pickerRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 10,
+    },
+
+    pickerWrap: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "#33D063",
+        borderRadius: 10,
+        marginHorizontal: 4,
+        overflow: "hidden",
+        backgroundColor: "#ffffff",
+    },
+
+    picker: {
+        height: 50,
+        color: "#000000",
     },
 });
 
