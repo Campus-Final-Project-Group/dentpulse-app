@@ -107,7 +107,7 @@ const SignUp = () => {
             Alert.alert("Success", "Registration successful", [
                 {
                     text: "OK",
-                    onPress: () => navigation.navigate("Login"),
+                    onPress: () => navigation.navigate("OtpVerification"),
                 },
             ]);
         } catch (error) {
