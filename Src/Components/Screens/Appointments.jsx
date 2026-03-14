@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
     View,
     StyleSheet,
@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Text, ActivityIndicator, Icon } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import BackgroundWrapper from "../Com_components/BackgroundWrapper";
@@ -18,17 +18,11 @@ const Appointments = () => {
 
     const [loading, setLoading] = useState(true);
     const [appointments, setAppointments] = useState([]);
-
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
     const pageSize = 10;
-
     const BASE_URL = "http://192.168.155.122:8080";
-
-    useEffect(() => {
-        loadAppointments(currentPage);
-    }, [currentPage]);
 
     const loadAppointments = async (page = 0) => {
         try {
@@ -52,12 +46,24 @@ const Appointments = () => {
 
             setAppointments(response.data.content || []);
             setTotalPages(response.data.totalPages || 0);
+            setCurrentPage(response.data.number || 0);
         } catch (error) {
             console.log("Load appointments error:", error.response?.data || error.message);
             Alert.alert("Error", "Failed to load appointments");
         } finally {
             setLoading(false);
         }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            loadAppointments(currentPage);
+        }, [currentPage])
+    );
+
+    const goToPage = (page) => {
+        if (page < 0 || page >= totalPages) return;
+        loadAppointments(page);
     };
 
     const formatDate = (dateString) => {
@@ -211,7 +217,7 @@ const Appointments = () => {
                         currentPage === 0 && styles.pageButtonDisabled,
                     ]}
                     disabled={currentPage === 0}
-                    onPress={() => setCurrentPage((prev) => prev - 1)}
+                    onPress={() => goToPage(currentPage - 1)}
                 >
                     <Text style={styles.pageArrowText}>‹</Text>
                 </TouchableOpacity>
@@ -223,7 +229,7 @@ const Appointments = () => {
                             styles.pageNumberButton,
                             currentPage === page && styles.activePageNumberButton,
                         ]}
-                        onPress={() => setCurrentPage(page)}
+                        onPress={() => goToPage(page)}
                     >
                         <Text
                             style={[
@@ -242,7 +248,7 @@ const Appointments = () => {
                         currentPage === totalPages - 1 && styles.pageButtonDisabled,
                     ]}
                     disabled={currentPage === totalPages - 1}
-                    onPress={() => setCurrentPage((prev) => prev + 1)}
+                    onPress={() => goToPage(currentPage + 1)}
                 >
                     <Text style={styles.pageArrowText}>›</Text>
                 </TouchableOpacity>
