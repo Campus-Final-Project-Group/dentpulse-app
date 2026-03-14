@@ -3,11 +3,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-paper";
 import Profile from "./Profile";
 
+
 import Dashboard from "./Dashboard";
+import BookAppointment from "./BookAppointment"
 
 const Tab = createBottomTabNavigator();
 
-const BookScreen = () => null;
+
 const AppointmentsScreen = () => null;
 
 
@@ -39,8 +41,8 @@ const PatientTabs = () => {
       />
 
       <Tab.Screen
-        name="Book"
-        component={BookScreen}
+        name="BookAppointment"
+        component={BookAppointment}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon source="calendar-month-outline" color={color} size={size} />

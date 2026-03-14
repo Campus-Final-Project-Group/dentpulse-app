@@ -13,6 +13,7 @@ import FamilyMembers from "./Src/Components/Screens/FamilyMembers";
 import AddFamilyMember from "./Src/Components/Screens/AddFamilyMember";
 import UpdateFamilyMember from "./Src/Components/Screens/UpdateFamilyMember"
 import FamilyMemberIdCard from "./Src/Components/Screens/FamilyMemberIdCard";
+import BookAppointment from "./Src/Components/Screens/BookAppointment";
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,7 @@ export default function App() {
           <Stack.Screen name="AddFamilyMember" component={AddFamilyMember} />
           <Stack.Screen name="UpdateFamilyMember" component={UpdateFamilyMember} />
           <Stack.Screen name="FamilyMemberIdCard" component={FamilyMemberIdCard} />
+          <Stack.Screen name="BookAppointment" component={BookAppointment} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
