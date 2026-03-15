@@ -124,7 +124,7 @@ const SignUp = () => {
 
         try {
             const response = await axios.post(
-                "http://192.168.155.122:8080/api/v1/auth/register-patient",
+                "https://api.dentpulseclinic.com/api/v1/auth/register-patient",
                 {
                     fullName: fullName.trim(),
                     email: email.trim(),

@@ -15,7 +15,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const BASE_URL = "http://192.168.155.122:8080";
+  const BASE_URL = "https://api.dentpulseclinic.com";
 
   const resetPassword = async () => {
     if (newPassword.trim() === "") {

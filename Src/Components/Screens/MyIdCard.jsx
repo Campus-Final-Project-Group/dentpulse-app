@@ -24,7 +24,7 @@ const MyIdCard = () => {
     const [patientId, setPatientId] = useState("");
     const [qrBase64, setQrBase64] = useState("");
 
-    const BASE_URL = "http://192.168.155.122:8080";
+    const BASE_URL = "https://api.dentpulseclinic.com";
     const qrRef = useRef(null);
 
     const loadPatientData = async () => {

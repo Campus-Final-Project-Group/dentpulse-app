@@ -28,7 +28,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.155.122:8080/api/v1/auth/login",
+        "https://api.dentpulseclinic.com/api/v1/auth/login",
         {
           email: email,
           password: password,

@@ -22,7 +22,7 @@ const Appointments = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     const pageSize = 10;
-    const BASE_URL = "http://192.168.155.122:8080";
+    const BASE_URL = "https://api.dentpulseclinic.com";
 
     const loadAppointments = async (page = 0) => {
         try {

@@ -58,7 +58,7 @@ const BookAppointment = () => {
   const [openPatientModal, setOpenPatientModal] = useState(false);
   const [openDateModal, setOpenDateModal] = useState(false);
 
-  const BASE_URL = "http://192.168.155.122:8080";
+  const BASE_URL = "https://api.dentpulseclinic.com";
 
   useEffect(() => {
     loadPatients();
