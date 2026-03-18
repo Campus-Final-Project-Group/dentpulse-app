@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   StyleSheet,
@@ -6,9 +6,15 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { Text, Portal, Modal, ActivityIndicator, Icon } from "react-native-paper";
+import {
+  Text,
+  Portal,
+  Modal,
+  ActivityIndicator,
+  Icon,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Calendar } from "react-native-calendars";
@@ -44,7 +50,8 @@ const WEEKDAY_SLOTS = [
 const BookAppointment = () => {
   const navigation = useNavigation();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // first screen load
+  const [refreshing, setRefreshing] = useState(false); // when coming back to page
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
@@ -60,44 +67,21 @@ const BookAppointment = () => {
 
   const BASE_URL = "https://api.dentpulseclinic.com";
 
-  useEffect(() => {
-    loadPatients();
-  }, []);
+  const getStoredToken = async () => {
+    const token = await AsyncStorage.getItem("token");
 
-  const loadPatients = async () => {
-    try {
-      setLoading(true);
-
-      const token = await AsyncStorage.getItem("token");
-
-      if (!token) {
-        Alert.alert("Error", "User token not found");
-        return;
-      }
-
-      const response = await axios.get(`${BASE_URL}/api/v1/patient/list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const patientList = response.data || [];
-      setPatients(patientList);
-
-      if (patientList.length > 0) {
-        setSelectedPatient(patientList[0]);
-      }
-    } catch (error) {
-      console.log("Load patients error:", error.response?.data || error.message);
-      Alert.alert("Error", "Failed to load patients");
-    } finally {
-      setLoading(false);
+    if (!token) {
+      Alert.alert("Error", "User token not found");
+      return null;
     }
+
+    return token;
   };
 
   const getDayTypeSlots = (dateString) => {
     if (!dateString) return [];
-    const day = new Date(dateString).getDay(); // 0 Sun, 6 Sat
+
+    const day = new Date(dateString).getDay(); // 0 Sunday, 6 Saturday
 
     if (day === 0 || day === 6) {
       return WEEKEND_SLOTS;
@@ -106,17 +90,30 @@ const BookAppointment = () => {
     return WEEKDAY_SLOTS;
   };
 
-  const fetchBookedTimes = async (dateString) => {
+  const availableSlots = useMemo(() => {
+    return getDayTypeSlots(selectedDate);
+  }, [selectedDate]);
+
+  const isSlotBooked = (slot) => {
+    return bookedTimes.includes(slot);
+  };
+
+  const fetchBookedTimes = async (dateString, showSpinner = true) => {
+    if (!dateString) {
+      setBookedTimes([]);
+      setSelectedTime("");
+      return;
+    }
+
     try {
-      setLoadingBookedTimes(true);
+      if (showSpinner) {
+        setLoadingBookedTimes(true);
+      }
+
       setSelectedTime("");
 
-      const token = await AsyncStorage.getItem("token");
-
-      if (!token) {
-        Alert.alert("Error", "User token not found");
-        return;
-      }
+      const token = await getStoredToken();
+      if (!token) return;
 
       const response = await axios.get(
         `${BASE_URL}/api/appointments/booked-times?date=${dateString}`,
@@ -128,45 +125,101 @@ const BookAppointment = () => {
       );
 
       const data = response.data || [];
-
-      if (Array.isArray(data)) {
-        setBookedTimes(data);
-      } else {
-        setBookedTimes([]);
-      }
+      setBookedTimes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.log("Booked times error:", error.response?.data || error.message);
       setBookedTimes([]);
       Alert.alert("Error", "Failed to load booked time slots");
     } finally {
-      setLoadingBookedTimes(false);
+      if (showSpinner) {
+        setLoadingBookedTimes(false);
+      }
     }
   };
 
-  const availableSlots = useMemo(() => {
-    return getDayTypeSlots(selectedDate);
-  }, [selectedDate]);
+  const loadPatients = async ({ silent = false } = {}) => {
+    try {
+      if (silent) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
-  const isSlotBooked = (slot) => {
-    return bookedTimes.includes(slot);
+      const token = await getStoredToken();
+      if (!token) return;
+
+      const response = await axios.get(`${BASE_URL}/api/v1/patient/list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const patientList = Array.isArray(response.data) ? response.data : [];
+      setPatients(patientList);
+
+      if (patientList.length === 0) {
+        setSelectedPatient(null);
+        return;
+      }
+
+      setSelectedPatient((prevSelectedPatient) => {
+        if (!prevSelectedPatient) {
+          return patientList[0];
+        }
+
+        const matchedPatient = patientList.find(
+          (patient) => patient.patientId === prevSelectedPatient.patientId
+        );
+
+        return matchedPatient || patientList[0];
+      });
+    } catch (error) {
+      console.log("Load patients error:", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to load patients");
+    } finally {
+      if (silent) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
+      }
+    }
   };
+
+  const refreshScreenData = async () => {
+    await loadPatients({ silent: true });
+
+    if (selectedDate) {
+      await fetchBookedTimes(selectedDate, false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (loading) {
+        loadPatients({ silent: false });
+      } else {
+        refreshScreenData();
+      }
+    }, [loading, selectedDate])
+  );
 
   const handleSelectDate = async (dateString) => {
     setSelectedDate(dateString);
     setOpenDateModal(false);
-    await fetchBookedTimes(dateString);
+    await fetchBookedTimes(dateString, true);
   };
 
   const formatDisplayDate = (dateString) => {
     if (!dateString) return "Select Date";
+
     const date = new Date(dateString);
     return date.toDateString();
   };
 
   const canBook =
-    selectedPatient &&
-    selectedDate &&
-    selectedTime &&
+    !!selectedPatient &&
+    !!selectedDate &&
+    !!selectedTime &&
     !isSlotBooked(selectedTime);
 
   const handleBookAppointment = async () => {
@@ -188,12 +241,8 @@ const BookAppointment = () => {
     try {
       setBooking(true);
 
-      const token = await AsyncStorage.getItem("token");
-
-      if (!token) {
-        Alert.alert("Error", "User token not found");
-        return;
-      }
+      const token = await getStoredToken();
+      if (!token) return;
 
       const response = await axios.post(
         `${BASE_URL}/api/appointments`,
@@ -214,14 +263,17 @@ const BookAppointment = () => {
       Alert.alert("Success", "Appointment booked successfully", [
         {
           text: "OK",
-          onPress: () => {
+          onPress: async () => {
             setSelectedTime("");
-            fetchBookedTimes(selectedDate);
+            await fetchBookedTimes(selectedDate, false);
           },
         },
       ]);
     } catch (error) {
-      console.log("Book appointment error:", error.response?.data || error.message);
+      console.log(
+        "Book appointment error:",
+        error.response?.data || error.message
+      );
 
       if (error.response) {
         Alert.alert(
@@ -263,6 +315,13 @@ const BookAppointment = () => {
           </TouchableOpacity>
 
           <Text style={styles.pageTitle}>Book Appointment</Text>
+
+          {refreshing && (
+            <View style={styles.refreshWrap}>
+              <ActivityIndicator animating={true} size="small" color="#33D063" />
+              <Text style={styles.refreshText}>Refreshing latest data...</Text>
+            </View>
+          )}
 
           <View style={styles.sectionCard}>
             <View style={styles.titleRow}>
@@ -313,8 +372,14 @@ const BookAppointment = () => {
 
               {loadingBookedTimes ? (
                 <View style={styles.slotLoaderWrap}>
-                  <ActivityIndicator animating={true} size="small" color="#33D063" />
-                  <Text style={styles.slotLoaderText}>Loading time slots...</Text>
+                  <ActivityIndicator
+                    animating={true}
+                    size="small"
+                    color="#33D063"
+                  />
+                  <Text style={styles.slotLoaderText}>
+                    Loading time slots...
+                  </Text>
                 </View>
               ) : (
                 <View style={styles.slotGrid}>
@@ -374,7 +439,16 @@ const BookAppointment = () => {
             onPress={handleBookAppointment}
           >
             <View style={styles.bookButtonInner}>
-              <Icon source="plus" size={24} color="#FFFFFF" />
+              {booking ? (
+                <ActivityIndicator
+                  animating={true}
+                  size="small"
+                  color="#FFFFFF"
+                />
+              ) : (
+                <Icon source="plus" size={24} color="#FFFFFF" />
+              )}
+
               <Text style={styles.bookButtonText}>
                 {booking ? "Booking..." : "Book Appointment"}
               </Text>
@@ -391,19 +465,25 @@ const BookAppointment = () => {
             <Text style={styles.modalTitle}>Select Patient</Text>
 
             <ScrollView style={{ maxHeight: 300 }}>
-              {patients.map((patient) => (
-                <TouchableOpacity
-                  key={patient.patientId}
-                  style={styles.optionItem}
-                  onPress={() => {
-                    setSelectedPatient(patient);
-                    setOpenPatientModal(false);
-                  }}
-                >
-                  <Text style={styles.optionText}>{patient.fullName}</Text>
-                  <Text style={styles.optionSubText}>{patient.relationship}</Text>
-                </TouchableOpacity>
-              ))}
+              {patients.length === 0 ? (
+                <Text style={styles.emptyModalText}>No patients found</Text>
+              ) : (
+                patients.map((patient) => (
+                  <TouchableOpacity
+                    key={patient.patientId}
+                    style={styles.optionItem}
+                    onPress={() => {
+                      setSelectedPatient(patient);
+                      setOpenPatientModal(false);
+                    }}
+                  >
+                    <Text style={styles.optionText}>{patient.fullName}</Text>
+                    <Text style={styles.optionSubText}>
+                      {patient.relationship}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </ScrollView>
           </Modal>
         </Portal>
@@ -467,16 +547,29 @@ const styles = StyleSheet.create({
     color: "#2F6B4D",
   },
 
+  refreshWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+  },
+
+  refreshText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#2F6B4D",
+  },
+
   backText: {
     fontSize: 14,
-    color: "#000000ff",
+    color: "#000000",
     marginBottom: 10,
   },
 
   pageTitle: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#000000ff",
+    color: "#000000",
     textAlign: "center",
     marginBottom: 16,
   },
@@ -643,6 +736,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#667085",
     marginTop: 4,
+  },
+
+  emptyModalText: {
+    fontSize: 15,
+    color: "#667085",
+    textAlign: "center",
+    paddingVertical: 16,
   },
 });
 
