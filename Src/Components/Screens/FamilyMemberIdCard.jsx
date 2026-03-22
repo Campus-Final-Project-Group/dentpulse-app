@@ -16,6 +16,8 @@ const FamilyMemberIdCard = () => {
   const [downloading, setDownloading] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const PUBLIC_WEB_URL = "https://www.dentpulseclinic.com";
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -49,18 +51,10 @@ const FamilyMemberIdCard = () => {
     );
   }
 
+  const rawPatientId = member.patientId ? String(member.patientId) : "1";
   const patientId = member.patientId ? `PT-${member.patientId}` : "PT-1";
 
-  const qrValue = JSON.stringify({
-    patientId: patientId,
-    fullName: member.fullName || "",
-    phone: member.phone || "",
-    email: member.email || "",
-    birthDate: member.birthDate || "",
-    address: member.address || "",
-    gender: member.gender || "",
-    relationship: member.relationship || "",
-  });
+  const qrValue = `${PUBLIC_WEB_URL}/patient/${rawPatientId}`;
 
   const handleDownloadPdf = async () => {
     try {
@@ -111,7 +105,7 @@ const FamilyMemberIdCard = () => {
 
                     <div style="width:34%; text-align:center;">
                       <img src="data:image/png;base64,${data}" style="width:180px; height:180px;" />
-                      <div style="font-size:16px; margin-top:8px;">Scan QR</div>
+                      <div style="font-size:16px; margin-top:8px;">Scan QR Code</div>
                     </div>
                   </div>
 

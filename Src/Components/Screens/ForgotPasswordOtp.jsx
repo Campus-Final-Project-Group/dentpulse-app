@@ -13,7 +13,7 @@ const ForgotPasswordOtp = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const BASE_URL = "http://192.168.155.122:8080";
+  const BASE_URL = "https://api.dentpulseclinic.com";
 
   const verifyOtp = async () => {
     if (otp.trim() === "") {

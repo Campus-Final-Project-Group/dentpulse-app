@@ -20,7 +20,7 @@ const FamilyMembers = () => {
     const [owner, setOwner] = useState(null);
     const [familyMembers, setFamilyMembers] = useState([]);
 
-    const BASE_URL = "http://192.168.155.122:8080";
+    const BASE_URL = "https://api.dentpulseclinic.com";
 
     const loadFamilyData = async () => {
         try {
