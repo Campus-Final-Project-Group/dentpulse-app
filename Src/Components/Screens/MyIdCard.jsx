@@ -22,9 +22,10 @@ const MyIdCard = () => {
     const [address, setAddress] = useState("");
     const [gender, setGender] = useState("");
     const [patientId, setPatientId] = useState("");
-    const [qrBase64, setQrBase64] = useState("");
+    const [rawPatientId, setRawPatientId] = useState("");
 
-    const BASE_URL = "http://192.168.155.122:8080";
+    const BASE_URL = "https://api.dentpulseclinic.com";
+    const PUBLIC_WEB_URL = "https://www.dentpulseclinic.com";
     const qrRef = useRef(null);
 
     const loadPatientData = async () => {
@@ -52,6 +53,7 @@ const MyIdCard = () => {
             setBirthDate(data.birthDate || "");
             setAddress(data.address || "");
             setGender(data.gender || "");
+            setRawPatientId(data.patientId ? String(data.patientId) : "1");
             setPatientId(data.patientId ? `PT-${data.patientId}` : "PT-1");
         } catch (error) {
             console.log("Load ID card error:", error.response?.data || error.message);
@@ -67,15 +69,7 @@ const MyIdCard = () => {
         }, [])
     );
 
-    const qrValue = JSON.stringify({
-        patientId,
-        fullName,
-        phone,
-        email,
-        birthDate,
-        address,
-        gender,
-    });
+    const qrValue = `${PUBLIC_WEB_URL}/patient/${rawPatientId || "1"}`;
 
     const handleDownloadPdf = async () => {
         try {
@@ -123,7 +117,7 @@ const MyIdCard = () => {
 
                     <div style="width:34%; text-align:center;">
                       <img src="data:image/png;base64,${data}" style="width:180px; height:180px;" />
-                      <div style="font-size:16px; margin-top:8px;">Scan QR</div>
+                      <div style="font-size:16px; margin-top:8px;">Scan QR Code</div>
                     </div>
                   </div>
 
@@ -148,10 +142,6 @@ const MyIdCard = () => {
 
                     console.log("PDF file:", file);
                     Alert.alert("Success", "PDF saved successfully");
-                    // Alert.alert(
-                    //     "Success",
-                    //     `PDF saved at:\n${file.filePath || file.filePath || "File created"}`
-                    // );
                 } catch (err) {
                     console.log("PDF generate error:", err);
                     Alert.alert("Error", "Failed to generate PDF");
@@ -425,6 +415,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "600",
     },
+
     backButton: {
         marginTop: 12,
         backgroundColor: "#FFFFFF",

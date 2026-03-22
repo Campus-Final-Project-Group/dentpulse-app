@@ -24,7 +24,7 @@ const ReviewAppointment = () => {
   const [comment, setComment] = useState("");
   const [sending, setSending] = useState(false);
 
-  const BASE_URL = "http://192.168.155.122:8080";
+  const BASE_URL = "https://api.dentpulseclinic.com";
 
   const submitReview = async () => {
     if (!appointmentId) {

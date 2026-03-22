@@ -32,7 +32,7 @@ const OtpVerification = () => {
       }
 
       const response = await axios.post(
-        "http://192.168.155.122:8080/api/v1/auth/verify-email",
+        "http://api.dentpulseclinic.com/api/v1/auth/verify-email",
         {
           email: savedEmail,
           otp: otp.trim(),
