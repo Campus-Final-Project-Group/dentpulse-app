@@ -402,7 +402,7 @@ const SignUp = () => {
                                             key={month.value}
                                             label={month.label}
                                             value={month.value}
-                                            color="#000000"
+                                            color="#e7ddddff"
                                         />
                                     ))}
                                 </Picker>
@@ -420,7 +420,7 @@ const SignUp = () => {
                                             key={year}
                                             label={year.toString()}
                                             value={year}
-                                            color="#000000"
+                                            color="#fafafaff"
                                         />
                                     ))}
                                 </Picker>
